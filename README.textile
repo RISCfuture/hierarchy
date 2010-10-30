@@ -1,0 +1,96 @@
+h1. Hierarchy -- Use PostgreSQL @LTREE@ columns in ActiveRecord
+
+| *Author* | Tim Morgan |
+| *Version* | 1.0 (Oct 30, 2010) |
+| *License* | Released under the MIT license. |
+
+h2. About
+
+The @LTREE@ column type is a PostgreSQL-specific type (installation script is
+available in the @contrib@ directory in your PostgreSQL installation) for
+representing hierarchies. It is more efficient than the typical way of
+accomplishing hierarchal structures in SQL, the @parent_id@ column (or similar).
+
+This gem lets you use an @LTREE@-utilizing hierarchy in ActiveRecord. Including
+this gem in your project gets you a) monkey-patches* to Arel to support @LTREE@
+columns, and b) a module you can include in your models, providing an abundance
+of methods to help you navigate and manipulate the hierarchy.
+
+*Though I don't know for sure, I suspect when Arel 2.0 is supported in Rails, I
+will be able to remove this monkey-patching ugliness.
+
+h2. Installation
+
+*Important Note:* This gem requires Ruby 1.9 and Rails 3.0.
+
+Firstly, add the gem to your Rails project's @Gemfile@:
+
+<pre><code>
+gem 'hierarchy'
+</code></pre>
+
+Then, run the generator to install the migration:
+
+<pre><code>
+rails generate hierarchy
+</code></pre>
+
+Note that *this migration must precede any tables using @LTREEs@*, so reorder
+the migration if you have to.
+
+h2. Usage
+
+Because this gem was hastily extracted from a personal project, it's a little
+constraining in how it can be used. (Sorry.) Currently the gem requires that
+your table schema have a column named @path@ of type @LTREE@, defined as in the
+example below:
+
+<pre><code>
+path LTREE NOT NULL DEFAULT ''
+</code></pre>
+
+Once you've got that column in your model, feel free to include the @Hierarchy@
+module:
+
+<pre><code>
+class Person < ActiveRecord::Base
+  include Hierarchy
+end
+</code></pre>
+
+You can now define hierarchy by setting a model's @parent@, like so:
+
+<pre><code>
+person.parent = mother #=> Sets the `path` column appropriately
+</code></pre>
+
+You also have access to a wealth of ways to traverse the hierarchy:
+
+<pre><code>
+person.children.where(gender: :male)
+person.top_level?
+Person.treeified #=> returns a traversable tree of all people
+</code></pre>
+
+For more information on what you can do, see the {Hierarchy} module
+documentation.
+
+h2. Development
+
+If you wish to develop for Hierarchy, the first thing you will want to do is get
+specs up and running. This requires a call to @bundle install@ (obviously) and
+setting up your test database.
+
+As you can see in the @spec/spec_helper.rb@ file, the specs require that a
+PostgreSQL database named @hierarchy_test@ exist and be owned by a
+@hierarchy_tester@ user. Unfortunately I haven't written a way to configure this
+(though patches are welcome). So, the following commands should suffice to get
+you started:
+
+<pre><code>
+createuser hierarchy_tester # answer "no" to all prompts
+createdb -O hierarchy_tester hierarchy_test
+</code></pre>
+
+With those steps done you should be able to run @rake spec@ and see the Glorious
+Green.
