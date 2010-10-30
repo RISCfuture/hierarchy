@@ -16,8 +16,7 @@ Jeweler::Tasks.new do |gem|
   gem.homepage = "http://github.com/riscfuture/hierarchy"
   gem.authors = [ "Tim Morgan" ]
   gem.required_ruby_version = '>= 1.9'
-  gem.add_dependency 'activerecord', '>= 3.0'
-  gem.add_dependency 'activesupport', '>= 3.0'
+  gem.add_dependency 'rails', '>= 3.0'
 end
 Jeweler::GemcutterTasks.new
 
