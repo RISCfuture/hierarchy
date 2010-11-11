@@ -144,7 +144,7 @@ module Hierarchy
     # @return [true, false] Whether or not this object has no parents.
 
     def top_level?
-      path == ''
+      path.blank?
     end
 
     # @return [true, false] Whether or not this object has no children. Makes a
@@ -161,8 +161,7 @@ module Hierarchy
 
     # @private
     def index_path
-      raise "Can't get index path of top-level object #{self.inspect}" if path.blank?
-      IndexPath.from_ltree path
+      IndexPath.from_ltree path.to_s
     end
   end
 end
