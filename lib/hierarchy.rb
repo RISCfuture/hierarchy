@@ -53,7 +53,7 @@ module Hierarchy
     
     base.scope :parent_of, ->(obj) { obj.top_level? ? base.where('false') : base.where(id: obj.index_path.last) }
     base.scope :children_of, ->(obj) { base.where(path: obj.my_path) }
-    base.scope :ancestors_of, ->(obj) { base.where(id: obj.index_path.to_a) }
+    base.scope :ancestors_of, ->(obj) { obj.top_level? ? base.where('false') : base.where(id: obj.index_path.to_a) }
     base.scope :descendants_of, ->(obj) { base.where([ "path <@ ?", obj.my_path ]) }
     base.scope :siblings_of, ->(obj) { base.where(path: obj.path) }
     base.scope :priority_order, base.order("NLEVEL(path) ASC")
@@ -109,6 +109,7 @@ module Hierarchy
     # @return [Array] The objects above this one in the hierarchy.
 
     def ancestors(options={})
+      return [] if top_level?
       objects = self.class.ancestors_of(self).scoped(options).group_by(&:id)
       index_path.map { |id| objects[id].first }
     end
@@ -160,6 +161,7 @@ module Hierarchy
 
     # @private
     def index_path
+      raise "Can't get index path of top-level object #{self.inspect}" if path.blank?
       IndexPath.from_ltree path
     end
   end
