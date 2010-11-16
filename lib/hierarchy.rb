@@ -1,20 +1,18 @@
 # @private
 module Arel
   # @private
-  module Sql
+  module Attributes
     # @private
-    module Attributes
-      # @private
-      def self.for_with_psql(column)
-        case column.sql_type
-          when 'ltree' then String
-          else for_without_psql(column)
-        end
+    def self.for_with_psql(column)
+      p column.sql_type
+      case column.sql_type
+        when 'ltree' then String
+        else for_without_psql(column)
       end
-      unless singleton_class.method_defined?(:for_without_psql)
-        singleton_class.send :alias_method, :for_without_psql, :for
-        singleton_class.send :alias_method, :for, :for_with_psql
-      end
+    end
+    unless singleton_class.method_defined?(:for_without_psql)
+      singleton_class.send :alias_method, :for_without_psql, :for
+      singleton_class.send :alias_method, :for, :for_with_psql
     end
   end
 end

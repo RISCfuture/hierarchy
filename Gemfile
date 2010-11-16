@@ -1,7 +1,7 @@
 source :rubygems
 
 # DEPENDENCIES
-gem 'rails', '>= 3.0'
+gem 'rails', '>= 3.0.2'
 
 # DEVELOPMENT
 gem 'jeweler'
