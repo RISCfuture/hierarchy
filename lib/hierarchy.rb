@@ -4,7 +4,6 @@ module Arel
   module Attributes
     # @private
     def self.for_with_psql(column)
-      p column.sql_type
       case column.sql_type
         when 'ltree' then String
         else for_without_psql(column)
