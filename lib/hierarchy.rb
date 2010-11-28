@@ -54,6 +54,7 @@ module Hierarchy
     base.scope :descendants_of, ->(obj) { base.where([ "path <@ ?", obj.my_path ]) }
     base.scope :siblings_of, ->(obj) { base.where(path: obj.path) }
     base.scope :priority_order, base.order("NLEVEL(path) ASC")
+    base.scope :top_level, base.where([ "path IS NULL or path = ?", '' ])
     
     base.before_save { |obj| obj.path ||= '' }
   end
