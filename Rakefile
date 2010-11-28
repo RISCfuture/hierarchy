@@ -1,13 +1,15 @@
-require 'rake'
+require 'rubygems'
+require 'bundler'
 begin
-  require 'bundler'
-rescue LoadError
-  puts "Bundler is not installed; install with `gem install bundler`."
-  exit 1
+  Bundler.setup(:default, :development)
+rescue Bundler::BundlerError => e
+  $stderr.puts e.message
+  $stderr.puts "Run `bundle install` to install missing gems"
+  exit e.status_code
 end
+require 'rake'
 
-Bundler.require :default
-
+require 'jeweler'
 Jeweler::Tasks.new do |gem|
   gem.name = "hierarchy"
   gem.summary = %Q{Use PostgreSQL LTREE type with ActiveRecord}
@@ -16,16 +18,17 @@ Jeweler::Tasks.new do |gem|
   gem.homepage = "http://github.com/riscfuture/hierarchy"
   gem.authors = [ "Tim Morgan" ]
   gem.required_ruby_version = '>= 1.9'
-  gem.add_dependency 'rails', '>= 3.0.2'
 end
-Jeweler::GemcutterTasks.new
+Jeweler::RubygemsDotOrgTasks.new
 
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new
 
+require 'yard'
 YARD::Rake::YardocTask.new('doc') do |doc|
   doc.options << "-m" << "textile"
   doc.options << "--protected"
+  doc.options << "--no-private"
   doc.options << "-r" << "README.textile"
   doc.options << "-o" << "doc"
   doc.options << "--title" << "Hierarchy Documentation".inspect

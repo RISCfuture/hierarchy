@@ -1,13 +1,11 @@
 source :rubygems
 
-# DEPENDENCIES
 gem 'rails', '>= 3.0.2'
 
-# DEVELOPMENT
-gem 'jeweler'
-gem 'yard'
-gem 'RedCloth', require: 'redcloth'
-gem 'pg'
-
-# TEST
-gem 'rspec'
+group :development do
+  gem 'jeweler'
+  gem 'yard'
+  gem 'RedCloth', require: 'redcloth'
+  gem 'pg'
+  gem 'rspec'
+end
