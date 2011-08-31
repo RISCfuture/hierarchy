@@ -18,6 +18,7 @@ Jeweler::Tasks.new do |gem|
   gem.homepage = "http://github.com/riscfuture/hierarchy"
   gem.authors = [ "Tim Morgan" ]
   gem.required_ruby_version = '>= 1.9'
+  gem.files = %w( lib/**/* templates/**/* LICENSE README.textile hierarchy.gemspec )
 end
 Jeweler::RubygemsDotOrgTasks.new
 
@@ -31,7 +32,7 @@ YARD::Rake::YardocTask.new('doc') do |doc|
   doc.options << "--no-private"
   doc.options << "-r" << "README.textile"
   doc.options << "-o" << "doc"
-  doc.options << "--title" << "Hierarchy Documentation".inspect
+  doc.options << "--title" << "Hierarchy Documentation"
   
   doc.files = [ 'lib/**/*', 'README.textile' ]
 end
