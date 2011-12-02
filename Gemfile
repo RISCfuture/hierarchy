@@ -1,11 +1,11 @@
 source :rubygems
 
 gem 'rails', '>= 3.0.2'
+gem 'pg'
 
 group :development do
-  gem 'jeweler'
-  gem 'yard'
-  gem 'RedCloth', require: 'redcloth'
-  gem 'pg'
+  gem 'jeweler', require: nil
+  gem 'yard', require: nil
+  gem 'RedCloth', require: nil
   gem 'rspec'
 end

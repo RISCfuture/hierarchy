@@ -1,4 +1,5 @@
-Bundler.require :default, :test
+require 'bundler'
+Bundler.require :default, :development
 require 'active_support'
 require 'active_record'
 
@@ -12,7 +13,8 @@ ActiveRecord::Base.establish_connection(
   database: 'hierarchy_test',
   username: 'hierarchy_tester'
 )
-system "psql -f `pg_config --sharedir`/contrib/ltree.sql hierarchy_test &>/dev/null"
+
+system "echo \"CREATE EXTENSION IF NOT EXISTS ltree\" | psql hierarchy_test"
 
 class Model < ActiveRecord::Base
   include Hierarchy
