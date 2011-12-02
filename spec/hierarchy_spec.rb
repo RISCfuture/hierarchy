@@ -84,6 +84,20 @@ describe Hierarchy do
       object.save!
       object.path.should eql("#{path}.#{parent.id}")
     end
+
+    it "should update children's paths as necessary" do
+      child = Model.create!
+      grandchild = Model.create!(parent: child)
+      parent = Model.create!
+      new_grandparent = Model.create!
+
+      child.update_attribute :parent, parent
+      child.path.should eql(parent.id.to_s)
+      parent.update_attribute :parent, new_grandparent
+      parent.path.should eql(new_grandparent.id.to_s)
+      child.reload.path.should eql([ new_grandparent.id, parent.id ].join('.'))
+      grandchild.reload.path.should eql([ new_grandparent.id, parent.id, child.id ].join('.'))
+    end
   end
 
   describe "#top_level?" do

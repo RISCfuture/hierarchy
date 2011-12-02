@@ -57,6 +57,7 @@ module Hierarchy
     base.scope :top_level, base.where([ "path IS NULL or path = ?", '' ])
     
     base.before_save { |obj| obj.path ||= '' }
+    base.before_save :update_children_with_new_parent
   end
 
   module ClassMethods
@@ -160,6 +161,16 @@ module Hierarchy
     # @private
     def index_path
       IndexPath.from_ltree path.to_s
+    end
+
+    private
+
+    # if our parent has changed, update our children's paths
+    def update_children_with_new_parent
+      if path_changed? and not new_record? then
+        old_path = (path_was.blank? ? id.to_s : "#{path_was}.#{id}")
+        self.class.where("path <@ ?", old_path).update_all([ "path = TEXT2LTREE(REPLACE(LTREE2TEXT(path), ?, ?))", old_path, my_path ])
+      end
     end
   end
 end
