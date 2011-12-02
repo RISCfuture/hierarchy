@@ -26,20 +26,20 @@ module Hierarchy
   extend ActiveSupport::Concern
   
   # @private
-  included do |base|
-    base.extend ActiveSupport::Memoizable
-    base.memoize :index_path, :ancestors
+  included do
+    extend ActiveSupport::Memoizable
+    memoize :index_path, :ancestors
     
-    base.scope :parent_of, ->(obj) { obj.top_level? ? base.where('false') : base.where(id: obj.index_path.last) }
-    base.scope :children_of, ->(obj) { base.where(path: obj.my_path) }
-    base.scope :ancestors_of, ->(obj) { obj.top_level? ? base.where('false') : base.where(id: obj.index_path.to_a) }
-    base.scope :descendants_of, ->(obj) { base.where([ "path <@ ?", obj.my_path ]) }
-    base.scope :siblings_of, ->(obj) { base.where(path: obj.path) }
-    base.scope :priority_order, base.order("NLEVEL(path) ASC")
-    base.scope :top_level, base.where([ "path IS NULL or path = ?", '' ])
-    
-    base.before_save { |obj| obj.path ||= '' }
-    base.before_save :update_children_with_new_parent
+    scope :parent_of, ->(obj) { obj.top_level? ? where('false') : where(id: obj.index_path.last) }
+    scope :children_of, ->(obj) { where(path: obj.my_path) }
+    scope :ancestors_of, ->(obj) { obj.top_level? ? where('false') : where(id: obj.index_path.to_a) }
+    scope :descendants_of, ->(obj) { where("path <@ ?", obj.my_path) }
+    scope :siblings_of, ->(obj) { where(path: obj.path) }
+    scope :priority_order, order("NLEVEL(path) ASC")
+    scope :top_level, where("path IS NULL or path = ?", '')
+
+    before_save { |obj| obj.path ||= '' }
+    before_save :update_children_with_new_parent
   end
 
   module ClassMethods
