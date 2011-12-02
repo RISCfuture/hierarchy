@@ -13,7 +13,7 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   gem.name = "hierarchy"
   gem.summary = %Q{Use PostgreSQL LTREE type with ActiveRecord}
-  gem.description = %Q{Adds ActiveRecord support for hierarchial data structures using PostgreSQL's LTREE column type.}
+  gem.description = %Q{Adds ActiveRecord support for hierarchical data structures using PostgreSQL's LTREE column type.}
   gem.email = "git@timothymorgan.info"
   gem.homepage = "http://github.com/riscfuture/hierarchy"
   gem.authors = [ "Tim Morgan" ]

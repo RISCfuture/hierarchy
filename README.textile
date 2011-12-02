@@ -1,7 +1,7 @@
 h1. Hierarchy -- Use PostgreSQL @LTREE@ columns in ActiveRecord
 
 | *Author* | Tim Morgan |
-| *Version* | 1.0.5 (Nov 27, 2010) |
+| *Version* | 1.0.6 (Nov 27, 2010) |
 | *License* | Released under the MIT license. |
 
 h2. About
