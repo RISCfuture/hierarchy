@@ -1,21 +1,3 @@
-# @private
-module Arel
-  # @private
-  module Attributes
-    # @private
-    def self.for_with_psql(column)
-      case column.sql_type
-        when 'ltree' then String
-        else for_without_psql(column)
-      end
-    end
-    unless singleton_class.method_defined?(:for_without_psql)
-      singleton_class.send :alias_method, :for_without_psql, :for
-      singleton_class.send :alias_method, :for, :for_with_psql
-    end
-  end
-end
-
 require 'hierarchy_generator'
 require 'hierarchy/index_path'
 require 'hierarchy/node'
