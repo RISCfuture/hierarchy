@@ -27,9 +27,6 @@ module Hierarchy
   
   # @private
   included do
-    extend ActiveSupport::Memoizable
-    memoize :index_path, :ancestors
-    
     scope :parent_of, ->(obj) { obj.top_level? ? where('false') : where(id: obj.index_path.last) }
     scope :children_of, ->(obj) { where(path: obj.my_path) }
     scope :ancestors_of, ->(obj) { obj.top_level? ? where('false') : where(id: obj.index_path.to_a) }
@@ -68,91 +65,89 @@ module Hierarchy
     end
   end
 
-  # Methods added to instances of the class this module is included into.
+  # Sets the object above this one in the hierarchy.
+  #
+  # @param [ActiveRecord::Base] parent The parent object.
+  # @raise [ArgumentError] If @parent@ is an unsaved record with no primary key.
 
-  module InstanceMethods
-    # Sets the object above this one in the hierarchy.
-    #
-    # @param [ActiveRecord::Base] parent The parent object.
-    # @raise [ArgumentError] If @parent@ is an unsaved record with no primary key.
+  def parent=(parent)
+    raise ArgumentError, "Parent cannot be a new record" if parent.try(:new_record?)
+    self.path = parent.try(:my_path)
+  end
 
-    def parent=(parent)
-      raise ArgumentError, "Parent cannot be a new record" if parent.try(:new_record?)
-      self.path = parent.try(:my_path)
-    end
+  # Returns an array of ancestors above this object. Note that a) this array
+  # is ordered with the most senior ancestor at the beginning of the list, and
+  # b) this is an _array_, not a _relation_. For that reason, you can pass
+  # any additional scope options to the method.
+  #
+  # @param [Hash] options Additional finder options.
+  # @return [Array] The objects above this one in the hierarchy.
 
-    # Returns an array of ancestors above this object. Note that a) this array
-    # is ordered with the most senior ancestor at the beginning of the list, and
-    # b) this is an _array_, not a _relation_. For that reason, you can pass
-    # any additional scope options to the method.
-    #
-    # @param [Hash] options Additional finder options.
-    # @return [Array] The objects above this one in the hierarchy.
-
-    def ancestors(options={})
+  def ancestors(options={})
+    @ancestors ||= begin
       return [] if top_level?
       objects = self.class.ancestors_of(self).scoped(options).group_by(&:id)
       index_path.map { |id| objects[id].first }
     end
+  end
 
-    # @return [ActiveRecord::Relation] The objects below this one in the
-    #   hierarchy.
+  # @return [ActiveRecord::Relation] The objects below this one in the
+  #   hierarchy.
 
-    def descendants
-      self.class.descendants_of self
-    end
+  def descendants
+    self.class.descendants_of self
+  end
 
-    # @return [ActiveRecord::Base] The object directly above this one in the
-    #   hierarchy.
+  # @return [ActiveRecord::Base] The object directly above this one in the
+  #   hierarchy.
 
-    def parent
-      top_level? ? nil : self.class.parent_of(self).first
-    end
+  def parent
+    top_level? ? nil : self.class.parent_of(self).first
+  end
 
-    # @return [ActiveRecord::Relation] The objects directly below this one
-    #   in the hierarchy.
+  # @return [ActiveRecord::Relation] The objects directly below this one
+  #   in the hierarchy.
 
-    def children
-      self.class.children_of self
-    end
+  def children
+    self.class.children_of self
+  end
 
-    # @return [Array] The objects at the same hierarchical level of this one.
+  # @return [Array] The objects at the same hierarchical level of this one.
 
-    def siblings
-      self.class.siblings_of(self) - [ self ]
-    end
+  def siblings
+    self.class.siblings_of(self) - [ self ]
+  end
 
-    # @return [true, false] Whether or not this object has no parents.
+  # @return [true, false] Whether or not this object has no parents.
 
-    def top_level?
-      path.blank?
-    end
+  def top_level?
+    path.blank?
+  end
 
-    # @return [true, false] Whether or not this object has no children. Makes a
-    #   database call.
+  # @return [true, false] Whether or not this object has no children. Makes a
+  #   database call.
 
-    def bottom_level?
-      children.empty?
-    end
+  def bottom_level?
+    children.empty?
+  end
 
-    # @private
-    def my_path
-      path.blank? ? id.to_s : "#{path}.#{id}"
-    end
+  # @private
+  def my_path
+    path.blank? ? id.to_s : "#{path}.#{id}"
+  end
 
-    # @private
-    def index_path
-      IndexPath.from_ltree path.to_s
-    end
+  # @private
+  def index_path
+    @index_path ||= IndexPath.from_ltree path.to_s
+  end
 
-    private
+  private
 
-    # if our parent has changed, update our children's paths
-    def update_children_with_new_parent
-      if path_changed? and not new_record? then
-        old_path = (path_was.blank? ? id.to_s : "#{path_was}.#{id}")
-        self.class.where("path <@ ?", old_path).update_all([ "path = TEXT2LTREE(REPLACE(LTREE2TEXT(path), ?, ?))", old_path, my_path ])
-      end
+  # if our parent has changed, update our children's paths
+  def update_children_with_new_parent
+    if path_changed? and not new_record? then
+      old_path = (path_was.blank? ? id.to_s : "#{path_was}.#{id}")
+      self.class.where("path <@ ?", old_path).update_all([ "path = TEXT2LTREE(REPLACE(LTREE2TEXT(path), ?, ?))", old_path, my_path ])
     end
   end
 end
