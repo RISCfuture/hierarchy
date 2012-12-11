@@ -24,7 +24,7 @@ require 'hierarchy/node'
 
 module Hierarchy
   extend ActiveSupport::Concern
-  
+
   # @private
   included do
     scope :parent_of, ->(obj) { obj.top_level? ? where('false') : where(id: obj.index_path.last) }
@@ -122,6 +122,11 @@ module Hierarchy
 
   def top_level?
     path.blank?
+  end
+
+  # @return top level parent or nil(if current obj is top level)
+  def top_level
+    self.top_level? ? nil : self.class.find(self.path.split('.').first)
   end
 
   # @return [true, false] Whether or not this object has no children. Makes a
