@@ -124,8 +124,8 @@ module Hierarchy
     path.blank?
   end
 
-  # @return top level parent or nil(if current obj is top level)
-  def top_level
+  # @return root parent or nil(if current obj is top level)
+  def root
     self.top_level? ? nil : self.class.find(self.path.split('.').first)
   end
 
