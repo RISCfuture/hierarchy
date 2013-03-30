@@ -43,7 +43,13 @@ your table schema have a column named @path@ of type @LTREE@, defined as in the
 example below:
 
 <pre><code>
-path LTREE NOT NULL DEFAULT ''
+  def change
+    create_table :table_name do |t|
+      # ...
+      t.column :path, 'LTREE', default: '', null: false
+      # ...
+    end
+  end
 </code></pre>
 
 Once you've got that column in your model, feel free to include the @Hierarchy@
