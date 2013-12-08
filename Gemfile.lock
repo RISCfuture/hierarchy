@@ -1,7 +1,6 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    RedCloth (4.2.9)
     actionmailer (4.0.2)
       actionpack (= 4.0.2)
       mail (~> 2.5.4)
@@ -96,6 +95,7 @@ GEM
     rake (10.1.0)
     rdoc (4.0.1)
       json (~> 1.4)
+    redcarpet (3.0.0)
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
@@ -127,9 +127,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  RedCloth
   jeweler
   pg
   rails (>= 3.0.2)
+  redcarpet
   rspec
   yard

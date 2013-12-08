@@ -1,5 +1,5 @@
 module Hierarchy
-  
+
   # A node in a tree structure. A node can have zero or more {#children}, and
   # has a reverse link back to its parent.
 
@@ -7,7 +7,7 @@ module Hierarchy
     # @return [Array<Node>] This node's children.
     attr_reader :children
 
-    # @return [Node, nil] This node's parent, or @nil@ if it is a root node.
+    # @return [Node, nil] This node's parent, or `nil` if it is a root node.
     attr_reader :parent
 
     # @return The object this node contains.
