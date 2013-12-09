@@ -2,19 +2,19 @@ require 'hierarchy_generator'
 require 'hierarchy/index_path'
 require 'hierarchy/node'
 
-# Adds a tree structure to a model. This is very similar to @acts_as_nested_set@
-# but uses the PostgreSQL-specific @ltree@ feature for schema storage.
+# Adds a tree structure to a model. This is very similar to `acts_as_nested_set`
+# but uses the PostgreSQL-specific `ltree` feature for schema storage.
 #
-# Your model must have a @path@ field of type @ltree@. This field will be a
+# Your model must have a `path` field of type `ltree`. This field will be a
 # period-delimited list of IDs of records above this one in the hierarchy. In
 # addition, you should also consider the following indexes:
 #
-# <pre><code>
+# ```` sql
 # CREATE INDEX index1 ON table USING gist(path)
 # CREATE INDEX index2 ON table USING btree(path)
-# </code></pre>
+# ````
 #
-# replacing @table@ with your table and @index1@/@index2@ with appropriate names
+# replacing `table` with your table and `index1`/`index2` with appropriate names
 # for these indexes.
 #
 # @example
@@ -32,8 +32,8 @@ module Hierarchy
     scope :ancestors_of, ->(obj) { obj.top_level? ? where('false') : where(id: obj.index_path.to_a) }
     scope :descendants_of, ->(obj) { where("path <@ ?", obj.my_path) }
     scope :siblings_of, ->(obj) { where(path: obj.path) }
-    scope :priority_order, order("NLEVEL(path) ASC")
-    scope :top_level, where("path IS NULL or path = ?", '')
+    scope :priority_order, -> { order("NLEVEL(path) ASC") }
+    scope :top_level, -> { where("path IS NULL or path = ?", '') }
 
     before_save { |obj| obj.path ||= '' }
     before_save :update_children_with_new_parent
@@ -68,7 +68,7 @@ module Hierarchy
   # Sets the object above this one in the hierarchy.
   #
   # @param [ActiveRecord::Base] parent The parent object.
-  # @raise [ArgumentError] If @parent@ is an unsaved record with no primary key.
+  # @raise [ArgumentError] If `parent` is an unsaved record with no primary key.
 
   def parent=(parent)
     raise ArgumentError, "Parent cannot be a new record" if parent.try(:new_record?)

@@ -1,7 +1,7 @@
 module Hierarchy
-  
+
   # An array of integers representing an ordered list of IDs. Duck-types an
-  # @Array@ in many ways.
+  # `Array` in many ways.
 
   class IndexPath
     include Enumerable
@@ -25,9 +25,9 @@ module Hierarchy
       @indexes = indexes
     end
 
-    # Creates an index path from a PostgreSQL @LTREE@ column.
+    # Creates an index path from a PostgreSQL `LTREE` column.
     #
-    # @param [String] string An @LTREE@ column value, such as "1.10.22".
+    # @param [String] string An `LTREE` column value, such as "1.10.22".
     # @return [IndexPath] A corresponding index path.
 
     def self.from_ltree(string)
