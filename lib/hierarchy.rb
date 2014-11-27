@@ -124,6 +124,11 @@ module Hierarchy
     path.blank?
   end
 
+  # @return root parent or nil(if current obj is top level)
+  def root
+    self.top_level? ? nil : self.class.find(self.path.split('.').first)
+  end
+
   # @return [true, false] Whether or not this object has no children. Makes a
   #   database call.
 

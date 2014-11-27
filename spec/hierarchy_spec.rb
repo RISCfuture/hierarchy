@@ -100,6 +100,16 @@ describe Hierarchy do
     end
   end
 
+  describe "#root of tree" do
+    it "should return root object" do
+      parent = Model.create!
+      child = Model.create!(parent: parent)
+      grandchild = Model.create!(parent: child)
+      expect(child.root).to eql(parent)
+      expect(grandchild.root).to eql(parent)
+    end
+  end
+
   describe "#top_level?" do
     it "should return true for a top-level object" do
       expect(Model.create!).to be_top_level
@@ -121,7 +131,7 @@ describe Hierarchy do
       expect(parent).not_to be_bottom_level
     end
   end
-  
+
   describe "#ancestors" do
     it "should return an empty array for a top-level object" do
       expect(Model.create!.ancestors).to eql([])
