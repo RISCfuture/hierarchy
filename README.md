@@ -1,3 +1,7 @@
+> ⚠️ **DEPRECATED:** `hierarchy` is no longer maintained. Consider `ancestry`,
+> `closure_tree`, or `acts_as_tree` for tree-structured ActiveRecord data. The
+> final release is v1.0.7.
+
 Hierarchy
 =========
 
